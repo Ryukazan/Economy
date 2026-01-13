@@ -1,0 +1,20 @@
+{
+  "Group": "Ryukazan",
+  "Name": "Economy",
+  "Version": "1.0.1",
+  "Description": "Adds a money value saved to players and economy commands.",
+  "Authors": [
+    {
+      "Name": "Yigit"
+    }
+  ],
+  "Website": "yigitguven.net",
+  "ServerVersion": "*",
+  "Dependencies": {
+    "Hytale:EntityModule": "*"
+  },
+  "OptionalDependencies": {},
+  "DisabledByDefault": false,
+  "Main": "com.yigit.economy.Main",
+  "IncludesAssetPack": false
+}
