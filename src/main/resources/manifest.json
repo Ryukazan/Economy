@@ -1,22 +1,24 @@
 {
-  "Group": "Ryukazan",
-  "Name": "Economy",
-  "Version": "1.0.1",
-  "Description": "An economy system for Hytale that adds player wallets, balance checking, and secure money transfers.",
-  "Authors": [
-    {
-      "Name": "Yigit",
-      "Email": "contact@yigitguven.net",
-      "Url": "yigitguven.net"
-    }
-  ],
-  "Website": "yigitguven.net/economy",
-  "ServerVersion": "*",
-  "Dependencies": {
-    "Hytale:EntityModule": "*"
-  },
-  "OptionalDependencies": {},
-  "DisabledByDefault": false,
-  "Main": "com.yigit.economy.Main",
-  "IncludesAssetPack": false
+    "Group": "Ryukazan",
+    "Name": "Economy",
+    "Version": "1.1.0",
+    "Description": "An economy system for Hytale that adds player wallets, balance checking, and secure money transfers.",
+    "Authors": [
+        {
+            "Name": "Yigit",
+            "Email": "contact@yigitguven.net",
+            "Url": "yigitguven.net"
+        }
+    ],
+    "Website": "yigitguven.net/economy",
+    "ServerVersion": "*",
+    "Dependencies": {
+        
+    },
+    "OptionalDependencies": {
+        
+    },
+    "DisabledByDefault": false,
+    "Main": "com.ryukazan.economy.EconomyPlugin",
+    "IncludesAssetPack": false
 }

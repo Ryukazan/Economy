@@ -1,0 +1,80 @@
+package com.ryukazan.economy;
+
+import com.hypixel.hytale.protocol.GameMode;
+import com.hypixel.hytale.server.core.Message;
+import com.hypixel.hytale.server.core.command.system.CommandContext;
+import com.hypixel.hytale.server.core.command.system.basecommands.CommandBase;
+import com.hypixel.hytale.server.core.entity.entities.Player;
+import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import java.awt.Color;
+import java.util.List;
+import javax.annotation.Nonnull;
+
+public class EcoAdminCommand extends CommandBase {
+
+    public EcoAdminCommand() {
+        super("ecoadmin", "Manage economy.");
+        this.setPermissionGroup(GameMode.Creative);
+    }
+
+    @Override
+    protected void executeSync(@Nonnull CommandContext ctx) {
+        // USE UTILS
+        List<String> args = HytaleUtils.getArgs(ctx);
+
+        if (args.size() < 3) {
+            ctx.sendMessage(Message.raw("Usage: /ecoadmin <give|take|set> <player> <amount>").color(Color.RED));
+            return;
+        }
+
+        String action = args.get(0);
+        String targetName = args.get(1);
+        long amount;
+
+        try {
+            amount = Long.parseLong(args.get(2));
+        } catch (NumberFormatException e) {
+            ctx.sendMessage(Message.raw("Invalid amount.").color(Color.RED));
+            return;
+        }
+
+        Player admin = (Player) ctx.sender();
+        Player target = null;
+        for (Player p : admin.getWorld().getPlayers()) {
+            if (p.toString().toLowerCase().contains(targetName.toLowerCase())) {
+                target = p;
+                break;
+            }
+        }
+
+        if (target == null) {
+            ctx.sendMessage(Message.raw("Player not found.").color(Color.RED));
+            return;
+        }
+
+        final Player finalTarget = target;
+
+        EconomyPlugin.INSTANCE.runSync(() -> {
+            EntityStore store = finalTarget.getWorld().getEntityStore();
+
+            // USE UTILS
+            MoneyComponent wallet = HytaleUtils.getComponent(store, finalTarget.getReference(), MoneyComponent.TYPE);
+
+            if (wallet == null) {
+                wallet = new MoneyComponent(0);
+                HytaleUtils.addComponent(store, finalTarget.getReference(), MoneyComponent.TYPE, wallet);
+            }
+
+            if (action.equalsIgnoreCase("give")) {
+                wallet.add(amount);
+                ctx.sendMessage(Message.raw("Gave " + amount + " coins.").color(Color.GREEN));
+            } else if (action.equalsIgnoreCase("take")) {
+                wallet.remove(amount);
+                ctx.sendMessage(Message.raw("Took " + amount + " coins.").color(Color.GREEN));
+            } else if (action.equalsIgnoreCase("set")) {
+                wallet.setBalance(amount);
+                ctx.sendMessage(Message.raw("Set balance to " + amount).color(Color.GREEN));
+            }
+        });
+    }
+}
