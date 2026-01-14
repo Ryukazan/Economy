@@ -21,25 +21,13 @@ public class MoneyComponent implements Component<EntityStore> {
 
     private Long balance;
 
-    public MoneyComponent() {
-        this.balance = 0L;
-    }
+    public MoneyComponent() { this.balance = 0L; }
+    public MoneyComponent(Long balance) { this.balance = balance; }
 
-    public MoneyComponent(Long balance) {
-        this.balance = balance;
-    }
+    public Long getBalance() { return balance; }
+    public void setBalance(Long balance) { this.balance = balance; }
 
-    public Long getBalance() {
-        return balance;
-    }
-
-    public void setBalance(Long balance) {
-        this.balance = balance;
-    }
-
-    public void add(long amount) {
-        this.balance += amount;
-    }
+    public void add(long amount) { this.balance += amount; }
 
     public boolean remove(long amount) {
         if (this.balance >= amount) {

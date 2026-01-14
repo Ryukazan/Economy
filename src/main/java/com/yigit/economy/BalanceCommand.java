@@ -8,6 +8,7 @@ import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import com.hypixel.hytale.component.ComponentType;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -31,15 +32,21 @@ public class BalanceCommand extends AbstractCommand {
             if (ref != null && ref.isValid()) {
                 Store<EntityStore> store = ref.getStore();
 
-                // Ensure the ComponentType is initialized.
+                // FIX: If TYPE is null, force-create it using Reflection
                 if (MoneyComponent.TYPE == null) {
-                    player.sendMessage(Message.raw("Error: Economy Mod not fully initialized.").color(Color.RED));
-                    return CompletableFuture.completedFuture(null);
+                    try {
+                        java.lang.reflect.Constructor<ComponentType> constructor = ComponentType.class.getDeclaredConstructor(Class.class, String.class);
+                        constructor.setAccessible(true);
+                        MoneyComponent.TYPE = constructor.newInstance(MoneyComponent.class, "economy:money");
+                    } catch (Exception e) {
+                        player.sendMessage(Message.raw("Critical Error: Could not initialize Economy.").color(Color.RED));
+                        e.printStackTrace();
+                        return CompletableFuture.completedFuture(null);
+                    }
                 }
 
                 MoneyComponent money = store.getComponent(ref, MoneyComponent.TYPE);
 
-                // Lazy Initialization: Create wallet if it doesn't exist
                 if (money == null) {
                     money = new MoneyComponent(0L);
                     store.addComponent(ref, MoneyComponent.TYPE, money);

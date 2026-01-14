@@ -11,6 +11,7 @@ import com.hypixel.hytale.server.core.command.system.arguments.types.SingleArgum
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.core.Message;
+import com.hypixel.hytale.component.ComponentType; // Added import
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
@@ -49,10 +50,16 @@ public class GiveMoneyCommand extends AbstractCommand {
         if (sender instanceof Player) {
             Player senderPlayer = (Player) sender;
 
-            // Initialization Check
+            // FIX: Reflection initialization if TYPE is missing
             if (MoneyComponent.TYPE == null) {
-                senderPlayer.sendMessage(Message.raw("Error: Economy Mod not initialized properly.").color(Color.RED));
-                return CompletableFuture.completedFuture(null);
+                try {
+                    java.lang.reflect.Constructor<ComponentType> constructor = ComponentType.class.getDeclaredConstructor(Class.class, String.class);
+                    constructor.setAccessible(true);
+                    MoneyComponent.TYPE = constructor.newInstance(MoneyComponent.class, "economy:money");
+                } catch (Exception e) {
+                    senderPlayer.sendMessage(Message.raw("Error: Economy Mod not initialized properly.").color(Color.RED));
+                    return CompletableFuture.completedFuture(null);
+                }
             }
 
             String targetName = context.get(this.targetArg);
@@ -63,7 +70,6 @@ public class GiveMoneyCommand extends AbstractCommand {
                 return CompletableFuture.completedFuture(null);
             }
 
-            // Fallback player lookup using string representation
             Player targetPlayer = null;
             for (Player p : senderPlayer.getWorld().getPlayers()) {
                 if (p.toString().toLowerCase().contains(targetName.toLowerCase())) {
@@ -86,7 +92,6 @@ public class GiveMoneyCommand extends AbstractCommand {
                 MoneyComponent senderWallet = store.getComponent(senderRef, MoneyComponent.TYPE);
                 MoneyComponent targetWallet = store.getComponent(targetRef, MoneyComponent.TYPE);
 
-                // Lazy Initialization
                 if (senderWallet == null) {
                     senderWallet = new MoneyComponent(0L);
                     store.addComponent(senderRef, MoneyComponent.TYPE, senderWallet);
