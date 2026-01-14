@@ -2,13 +2,15 @@
   "Group": "Ryukazan",
   "Name": "Economy",
   "Version": "1.0.1",
-  "Description": "Adds a money value saved to players and economy commands.",
+  "Description": "An economy system for Hytale that adds player wallets, balance checking, and secure money transfers.",
   "Authors": [
     {
-      "Name": "Yigit"
+      "Name": "Yigit",
+      "Email": "contact@yigitguven.net",
+      "Url": "yigitguven.net"
     }
   ],
-  "Website": "yigitguven.net",
+  "Website": "yigitguven.net/economy",
   "ServerVersion": "*",
   "Dependencies": {
     "Hytale:EntityModule": "*"

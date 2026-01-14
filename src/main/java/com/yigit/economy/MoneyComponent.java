@@ -7,20 +7,13 @@ import com.hypixel.hytale.component.Component;
 import com.hypixel.hytale.component.ComponentType;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 
-/**
- * Represents the persistent money storage for a player entity.
- */
 public class MoneyComponent implements Component<EntityStore> {
 
-    // The ComponentType used to look up this component in the EntityStore.
-    // Initialized lazily or via registration.
     public static ComponentType<EntityStore, MoneyComponent> TYPE;
 
-    // Codec definition for saving/loading data.
-    // Argument Order: Field Definition, Setter (BiConsumer), Getter (Function)
     public static final Codec<MoneyComponent> CODEC = BuilderCodec.builder(MoneyComponent.class, MoneyComponent::new)
             .addField(
-                    new KeyedCodec<>("balance", Codec.LONG),
+                    new KeyedCodec<>("Balance", Codec.LONG),
                     (MoneyComponent c, Long v) -> c.setBalance(v),
                     (MoneyComponent c) -> c.getBalance()
             )
