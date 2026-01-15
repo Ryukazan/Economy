@@ -3,40 +3,34 @@ package com.ryukazan.economy;
 import com.hypixel.hytale.protocol.GameMode;
 import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.command.system.CommandContext;
+import com.hypixel.hytale.server.core.command.system.arguments.system.RequiredArg;
+import com.hypixel.hytale.server.core.command.system.arguments.types.ArgTypes;
 import com.hypixel.hytale.server.core.command.system.basecommands.CommandBase;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import java.awt.Color;
-import java.util.List;
 import javax.annotation.Nonnull;
 
 public class EcoAdminCommand extends CommandBase {
 
+    private final RequiredArg<String> actionArg;
+    private final RequiredArg<String> playerArg;
+    private final RequiredArg<Integer> amountArg; // Changed to Integer
+
     public EcoAdminCommand() {
         super("ecoadmin", "Manage economy.");
         this.setPermissionGroup(GameMode.Creative);
+
+        this.actionArg = withRequiredArg("action", "give|take|set", ArgTypes.STRING);
+        this.playerArg = withRequiredArg("player", "Target player", ArgTypes.STRING);
+        this.amountArg = withRequiredArg("amount", "Quantity", ArgTypes.INTEGER); // Changed to INTEGER
     }
 
     @Override
     protected void executeSync(@Nonnull CommandContext ctx) {
-        // USE UTILS
-        List<String> args = HytaleUtils.getArgs(ctx);
-
-        if (args.size() < 3) {
-            ctx.sendMessage(Message.raw("Usage: /ecoadmin <give|take|set> <player> <amount>").color(Color.RED));
-            return;
-        }
-
-        String action = args.get(0);
-        String targetName = args.get(1);
-        long amount;
-
-        try {
-            amount = Long.parseLong(args.get(2));
-        } catch (NumberFormatException e) {
-            ctx.sendMessage(Message.raw("Invalid amount.").color(Color.RED));
-            return;
-        }
+        String action = actionArg.get(ctx);
+        String targetName = playerArg.get(ctx);
+        int amount = amountArg.get(ctx); // Retrieval as int
 
         Player admin = (Player) ctx.sender();
         Player target = null;
@@ -56,8 +50,6 @@ public class EcoAdminCommand extends CommandBase {
 
         EconomyPlugin.INSTANCE.runSync(() -> {
             EntityStore store = finalTarget.getWorld().getEntityStore();
-
-            // USE UTILS
             MoneyComponent wallet = HytaleUtils.getComponent(store, finalTarget.getReference(), MoneyComponent.TYPE);
 
             if (wallet == null) {

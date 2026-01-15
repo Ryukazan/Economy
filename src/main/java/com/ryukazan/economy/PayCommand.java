@@ -3,18 +3,25 @@ package com.ryukazan.economy;
 import com.hypixel.hytale.protocol.GameMode;
 import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.command.system.CommandContext;
+import com.hypixel.hytale.server.core.command.system.arguments.system.RequiredArg;
+import com.hypixel.hytale.server.core.command.system.arguments.types.ArgTypes;
 import com.hypixel.hytale.server.core.command.system.basecommands.CommandBase;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import java.awt.Color;
-import java.util.List;
 import javax.annotation.Nonnull;
 
 public class PayCommand extends CommandBase {
 
+    private final RequiredArg<String> playerArg;
+    private final RequiredArg<Integer> amountArg; // Changed to Integer
+
     public PayCommand() {
         super("pay", "Send money to another player.");
         this.setPermissionGroup(GameMode.Adventure);
+
+        this.playerArg = withRequiredArg("player", "Target player", ArgTypes.STRING);
+        this.amountArg = withRequiredArg("amount", "Quantity", ArgTypes.INTEGER); // Changed to INTEGER
     }
 
     @Override
@@ -24,22 +31,11 @@ public class PayCommand extends CommandBase {
             return;
         }
 
-        // USE UTILS
-        List<String> args = HytaleUtils.getArgs(ctx);
+        String targetName = playerArg.get(ctx);
+        int amount = amountArg.get(ctx); // Retrieval as int
 
-        if (args.size() < 2) {
-            sender.sendMessage(Message.raw("Usage: /pay <player> <amount>").color(Color.RED));
-            return;
-        }
-
-        String targetName = args.get(0);
-        long amount;
-
-        try {
-            amount = Long.parseLong(args.get(1));
-            if (amount <= 0) throw new NumberFormatException();
-        } catch (NumberFormatException e) {
-            sender.sendMessage(Message.raw("Invalid amount.").color(Color.RED));
+        if (amount <= 0) {
+            sender.sendMessage(Message.raw("Amount must be positive.").color(Color.RED));
             return;
         }
 
@@ -60,8 +56,6 @@ public class PayCommand extends CommandBase {
 
         EconomyPlugin.INSTANCE.runSync(() -> {
             EntityStore store = sender.getWorld().getEntityStore();
-
-            // USE UTILS
             MoneyComponent senderWallet = HytaleUtils.getComponent(store, sender.getReference(), MoneyComponent.TYPE);
             MoneyComponent targetWallet = HytaleUtils.getComponent(store, finalTarget.getReference(), MoneyComponent.TYPE);
 
