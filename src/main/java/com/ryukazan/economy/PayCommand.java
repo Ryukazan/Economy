@@ -14,14 +14,13 @@ import javax.annotation.Nonnull;
 public class PayCommand extends CommandBase {
 
     private final RequiredArg<String> playerArg;
-    private final RequiredArg<Integer> amountArg; // Changed to Integer
+    private final RequiredArg<Integer> amountArg;
 
     public PayCommand() {
         super("pay", "Send money to another player.");
         this.setPermissionGroup(GameMode.Adventure);
-
         this.playerArg = withRequiredArg("player", "Target player", ArgTypes.STRING);
-        this.amountArg = withRequiredArg("amount", "Quantity", ArgTypes.INTEGER); // Changed to INTEGER
+        this.amountArg = withRequiredArg("amount", "Quantity", ArgTypes.INTEGER);
     }
 
     @Override
@@ -32,7 +31,7 @@ public class PayCommand extends CommandBase {
         }
 
         String targetName = playerArg.get(ctx);
-        int amount = amountArg.get(ctx); // Retrieval as int
+        int amount = amountArg.get(ctx);
 
         if (amount <= 0) {
             sender.sendMessage(Message.raw("Amount must be positive.").color(Color.RED));
@@ -41,7 +40,8 @@ public class PayCommand extends CommandBase {
 
         Player target = null;
         for (Player p : sender.getWorld().getPlayers()) {
-            if (p.toString().toLowerCase().contains(targetName.toLowerCase())) {
+            // FIXED: getName() -> getDisplayName()
+            if (p.getDisplayName().equalsIgnoreCase(targetName)) {
                 target = p;
                 break;
             }
@@ -49,6 +49,11 @@ public class PayCommand extends CommandBase {
 
         if (target == null) {
             sender.sendMessage(Message.raw("Player not found.").color(Color.RED));
+            return;
+        }
+
+        if (target.equals(sender)) {
+            sender.sendMessage(Message.raw("You cannot pay yourself.").color(Color.RED));
             return;
         }
 
@@ -70,8 +75,8 @@ public class PayCommand extends CommandBase {
 
             if (senderWallet.remove(amount)) {
                 targetWallet.add(amount);
-                sender.sendMessage(Message.raw("Sent " + amount + " coins.").color(Color.GREEN));
-                finalTarget.sendMessage(Message.raw("Received " + amount + " coins.").color(Color.GREEN));
+                sender.sendMessage(Message.raw("Sent " + amount + " coins to " + finalTarget.getDisplayName()).color(Color.GREEN));
+                finalTarget.sendMessage(Message.raw("Received " + amount + " coins from " + sender.getDisplayName()).color(Color.GREEN));
             } else {
                 sender.sendMessage(Message.raw("Insufficient funds.").color(Color.RED));
             }

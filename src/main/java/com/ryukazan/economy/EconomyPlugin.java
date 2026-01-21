@@ -30,17 +30,39 @@ public class EconomyPlugin extends JavaPlugin {
 
     @Override
     protected void setup() {
-        // Initialize Component Type via Reflection
+        // --- FIXED: Robust Component Registration ---
         try {
             if (MoneyComponent.TYPE == null) {
-                // We use reflection to access the protected ComponentType constructor
-                Constructor<ComponentType> constructor = ComponentType.class.getDeclaredConstructor(Class.class, String.class);
-                constructor.setAccessible(true);
-                MoneyComponent.TYPE = constructor.newInstance(MoneyComponent.class, "economy:money");
-                LOGGER.atInfo().log("MoneyComponent Type registered successfully.");
+                Constructor<?>[] constructors = ComponentType.class.getDeclaredConstructors();
+                Constructor<?> bestMatch = null;
+
+                // Loop through constructors to find one that matches our needs (Class, String) or similar
+                for (Constructor<?> c : constructors) {
+                    c.setAccessible(true);
+                    if (c.getParameterCount() == 2) {
+                        Class<?>[] types = c.getParameterTypes();
+                        // Check for (Class, String) OR (String, Class)
+                        if ((types[0] == Class.class && types[1] == String.class) ||
+                                (types[0] == String.class && types[1] == Class.class)) {
+                            bestMatch = c;
+                            break;
+                        }
+                    }
+                }
+
+                if (bestMatch != null) {
+                    // Handle parameter order dynamically
+                    if (bestMatch.getParameterTypes()[0] == Class.class) {
+                        MoneyComponent.TYPE = (ComponentType) bestMatch.newInstance(MoneyComponent.class, "economy:money");
+                    } else {
+                        MoneyComponent.TYPE = (ComponentType) bestMatch.newInstance("economy:money", MoneyComponent.class);
+                    }
+                    LOGGER.atInfo().log("MoneyComponent Type registered successfully.");
+                } else {
+                    LOGGER.atSevere().log("Could not find suitable constructor for ComponentType!");
+                }
             }
         } catch (Exception e) {
-            // Corrected logging to ensure we see the error if it fails
             LOGGER.atSevere().log("Failed to initialize MoneyComponent Type! Error: " + e.toString());
             e.printStackTrace();
         }

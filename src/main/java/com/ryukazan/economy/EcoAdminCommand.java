@@ -15,34 +15,37 @@ public class EcoAdminCommand extends CommandBase {
 
     private final RequiredArg<String> actionArg;
     private final RequiredArg<String> playerArg;
-    private final RequiredArg<Integer> amountArg; // Changed to Integer
+    private final RequiredArg<Integer> amountArg;
 
     public EcoAdminCommand() {
         super("ecoadmin", "Manage economy.");
         this.setPermissionGroup(GameMode.Creative);
-
         this.actionArg = withRequiredArg("action", "give|take|set", ArgTypes.STRING);
         this.playerArg = withRequiredArg("player", "Target player", ArgTypes.STRING);
-        this.amountArg = withRequiredArg("amount", "Quantity", ArgTypes.INTEGER); // Changed to INTEGER
+        this.amountArg = withRequiredArg("amount", "Quantity", ArgTypes.INTEGER);
     }
 
     @Override
     protected void executeSync(@Nonnull CommandContext ctx) {
         String action = actionArg.get(ctx);
         String targetName = playerArg.get(ctx);
-        int amount = amountArg.get(ctx); // Retrieval as int
+        int amount = amountArg.get(ctx);
 
-        Player admin = (Player) ctx.sender();
         Player target = null;
-        for (Player p : admin.getWorld().getPlayers()) {
-            if (p.toString().toLowerCase().contains(targetName.toLowerCase())) {
-                target = p;
-                break;
+
+        // Try to find player in the sender's world
+        if (ctx.sender() instanceof Player senderPlayer) {
+            for (Player p : senderPlayer.getWorld().getPlayers()) {
+                // FIXED: getName() -> getDisplayName()
+                if (p.getDisplayName().equalsIgnoreCase(targetName)) {
+                    target = p;
+                    break;
+                }
             }
         }
 
         if (target == null) {
-            ctx.sendMessage(Message.raw("Player not found.").color(Color.RED));
+            ctx.sendMessage(Message.raw("Player '" + targetName + "' not found.").color(Color.RED));
             return;
         }
 
@@ -59,13 +62,13 @@ public class EcoAdminCommand extends CommandBase {
 
             if (action.equalsIgnoreCase("give")) {
                 wallet.add(amount);
-                ctx.sendMessage(Message.raw("Gave " + amount + " coins.").color(Color.GREEN));
+                ctx.sendMessage(Message.raw("Gave " + amount + " coins to " + finalTarget.getDisplayName()).color(Color.GREEN));
             } else if (action.equalsIgnoreCase("take")) {
                 wallet.remove(amount);
-                ctx.sendMessage(Message.raw("Took " + amount + " coins.").color(Color.GREEN));
+                ctx.sendMessage(Message.raw("Took " + amount + " coins from " + finalTarget.getDisplayName()).color(Color.GREEN));
             } else if (action.equalsIgnoreCase("set")) {
                 wallet.setBalance(amount);
-                ctx.sendMessage(Message.raw("Set balance to " + amount).color(Color.GREEN));
+                ctx.sendMessage(Message.raw("Set " + finalTarget.getDisplayName() + " balance to " + amount).color(Color.GREEN));
             }
         });
     }
