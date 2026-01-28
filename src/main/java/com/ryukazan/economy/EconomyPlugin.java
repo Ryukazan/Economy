@@ -4,9 +4,7 @@ import com.hypixel.hytale.component.ComponentType;
 import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
-
 import javax.annotation.Nonnull;
-import java.lang.reflect.Constructor;
 
 public class EconomyPlugin extends JavaPlugin {
 
@@ -30,37 +28,18 @@ public class EconomyPlugin extends JavaPlugin {
 
     @Override
     protected void setup() {
-        // --- FIXED: Robust Component Registration ---
         try {
             if (MoneyComponent.TYPE == null) {
-                Constructor<?>[] constructors = ComponentType.class.getDeclaredConstructors();
-                Constructor<?> bestMatch = null;
+                // FIX: Use the Constructor directly.
+                // It likely takes (String name, Class<T> clazz, Supplier<T> factory)
+                // If this line is still red, put your cursor on "ComponentType" and press Ctrl+P (or Cmd+P) to see the expected arguments.
+                MoneyComponent.TYPE = new ComponentType<>(
+                        "economy:money",
+                        MoneyComponent.class,
+                        MoneyComponent::new
+                );
 
-                // Loop through constructors to find one that matches our needs (Class, String) or similar
-                for (Constructor<?> c : constructors) {
-                    c.setAccessible(true);
-                    if (c.getParameterCount() == 2) {
-                        Class<?>[] types = c.getParameterTypes();
-                        // Check for (Class, String) OR (String, Class)
-                        if ((types[0] == Class.class && types[1] == String.class) ||
-                                (types[0] == String.class && types[1] == Class.class)) {
-                            bestMatch = c;
-                            break;
-                        }
-                    }
-                }
-
-                if (bestMatch != null) {
-                    // Handle parameter order dynamically
-                    if (bestMatch.getParameterTypes()[0] == Class.class) {
-                        MoneyComponent.TYPE = (ComponentType) bestMatch.newInstance(MoneyComponent.class, "economy:money");
-                    } else {
-                        MoneyComponent.TYPE = (ComponentType) bestMatch.newInstance("economy:money", MoneyComponent.class);
-                    }
-                    LOGGER.atInfo().log("MoneyComponent Type registered successfully.");
-                } else {
-                    LOGGER.atSevere().log("Could not find suitable constructor for ComponentType!");
-                }
+                LOGGER.atInfo().log("MoneyComponent Type registered successfully.");
             }
         } catch (Exception e) {
             LOGGER.atSevere().log("Failed to initialize MoneyComponent Type! Error: " + e.toString());
