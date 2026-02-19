@@ -1,9 +1,10 @@
-package com.ryukazan.economy;
+package com.yigitguven.economy;
 
 import com.hypixel.hytale.component.ComponentType;
 import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
+import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import javax.annotation.Nonnull;
 
 public class EconomyPlugin extends JavaPlugin {
@@ -30,15 +31,15 @@ public class EconomyPlugin extends JavaPlugin {
     protected void setup() {
         try {
             if (MoneyComponent.TYPE == null) {
-                // FIX: Use the Constructor directly.
-                // It likely takes (String name, Class<T> clazz, Supplier<T> factory)
-                // If this line is still red, put your cursor on "ComponentType" and press Ctrl+P (or Cmd+P) to see the expected arguments.
-                MoneyComponent.TYPE = new ComponentType<>(
-                        "economy:money",
-                        MoneyComponent.class,
-                        MoneyComponent::new
+                MoneyComponent.TYPE = EntityStore.REGISTRY.registerComponent(
+                    MoneyComponent.class,
+                    "economy:money",
+                    com.hypixel.hytale.codec.builder.BuilderCodec.builder(MoneyComponent.class, MoneyComponent::new)
+                        .addField(new com.hypixel.hytale.codec.KeyedCodec<>("Balance", com.hypixel.hytale.codec.Codec.LONG), (c, v) -> c.balance = v, (c) -> c.balance)
+                        .build(),
+                    true
                 );
-
+                
                 LOGGER.atInfo().log("MoneyComponent Type registered successfully.");
             }
         } catch (Exception e) {

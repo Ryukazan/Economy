@@ -1,11 +1,11 @@
-package com.ryukazan.economy;
+package com.yigitguven.economy;
 
 import com.hypixel.hytale.protocol.GameMode;
 import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.command.system.CommandContext;
 import com.hypixel.hytale.server.core.command.system.basecommands.CommandBase;
 import com.hypixel.hytale.server.core.entity.entities.Player;
-import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import com.hypixel.hytale.server.core.universe.PlayerRef;
 import java.awt.Color;
 import javax.annotation.Nonnull;
 
@@ -18,24 +18,29 @@ public class BalanceCommand extends CommandBase {
     }
 
     @Override
+    @SuppressWarnings("removal")
     protected void executeSync(@Nonnull CommandContext ctx) {
-        if (!(ctx.sender() instanceof Player player)) {
+        if (!ctx.isPlayer()) {
             ctx.sendMessage(Message.raw("Only players can use this command."));
             return;
         }
+        
+        // Resolve Player and Ref
+        Player player = (Player) ctx.sender();
+        PlayerRef ref = player.getPlayerRef();
 
         EconomyPlugin.INSTANCE.runSync(() -> {
-            EntityStore store = player.getWorld().getEntityStore();
-
-            // USE UTILS
-            MoneyComponent money = HytaleUtils.getComponent(store, player.getReference(), MoneyComponent.TYPE);
+            System.out.println("[EconomyDebug] /bal execution for " + player.getDisplayName());
+            MoneyComponent money = HytaleUtils.getComponent(player, MoneyComponent.TYPE);
 
             if (money == null) {
+                 System.out.println("[EconomyDebug] /bal: No MoneyComponent found. Creating new one.");
                 money = new MoneyComponent(0);
-                HytaleUtils.addComponent(store, player.getReference(), MoneyComponent.TYPE, money);
+                HytaleUtils.addComponent(player, MoneyComponent.TYPE, money);
             }
 
             long balance = money.balance;
+            System.out.println("[EconomyDebug] /bal: Current Balance = " + balance);
             player.sendMessage(Message.raw("Your Balance: " + balance + " Coins").color(Color.GREEN));
         });
     }

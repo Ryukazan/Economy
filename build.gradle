@@ -4,6 +4,9 @@ plugins {
     id 'maven-publish'
 }
 
+group = 'com.yigitguven'
+version = '1.2.0'
+
 ext {
     hytaleHome = "${System.getProperty("user.home")}/AppData/Roaming/Hytale"
 }
@@ -19,14 +22,14 @@ publishing {
         mavenJava(MavenPublication) {
             from components.java
 
-            groupId = 'com.ryukazan'
+            groupId = 'com.yigitguven'
             artifactId = 'economy' // The name of the mod
-            version = '1.1.3' // The version number
+            version = '1.2.0' // The version number
 
             pom {
                 name = 'Economy'
                 description = 'A comprehensive economy API for Hytale.'
-                url = 'https://github.com/Ryukazan/Economy'
+                url = 'https://github.com/yigit-guven/Economy'
 
                 licenses {
                     license {
@@ -36,15 +39,15 @@ publishing {
                 }
                 developers {
                     developer {
-                        id = 'ryukazan'
+                        id = 'yigit'
                         name = 'Yigit'
                         email = 'contact@yigitguven.net'
                     }
                 }
                 scm {
-                    connection = 'scm:git:git://github.com/Ryukazan/Economy.git'
-                    developerConnection = 'scm:git:ssh://github.com/Ryukazan/Economy.git'
-                    url = 'https://github.com/Ryukazan/Economy'
+                    connection = 'scm:git:git://github.com/yigit-guven/Economy.git'
+                    developerConnection = 'scm:git:ssh://github.com/yigit-guven/Economy.git'
+                    url = 'https://github.com/yigit-guven/Economy'
                 }
             }
         }
@@ -71,7 +74,8 @@ javadoc {
 // compile against their code. This requires you to have Hytale installed using
 // the official launcher for now.
 dependencies {
-    implementation(files("serverjar/HytaleServer.jar"))
+    // implementation(files("serverjar/HytaleServer.jar"))
+    implementation(files("$hytaleHome/install/$patchline/package/game/latest/Server/HytaleServer.jar"))
 }
 
 // Create the working directory to run the server if it does not already exist.

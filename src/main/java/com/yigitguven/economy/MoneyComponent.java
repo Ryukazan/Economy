@@ -1,4 +1,4 @@
-package com.ryukazan.economy;
+package com.yigitguven.economy;
 
 import com.hypixel.hytale.component.Component;
 import com.hypixel.hytale.component.ComponentType;
@@ -20,4 +20,9 @@ public class MoneyComponent implements Component<EntityStore> {
 
     @Override
     public MoneyComponent clone() { return new MoneyComponent(this.balance); }
+
+    public MoneyComponent copy() { return new MoneyComponent(this.balance); }
+
+    @Override
+    public String toString() { return "MoneyComponent{balance=" + balance + "}"; }
 }

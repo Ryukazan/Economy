@@ -1,7 +1,7 @@
 {
-    "Group": "Ryukazan",
+    "Group": "Yigit",
     "Name": "Economy",
-    "Version": "1.1.3",
+    "Version": "1.2.0",
     "Description": "An economy system for Hytale that adds player wallets, balance checking, and secure money transfers.",
     "Authors": [
         {
@@ -11,7 +11,7 @@
         }
     ],
     "Website": "https://www.curseforge.com/hytale/mods/economy",
-    "ServerVersion": "*",
+    "ServerVersion": "2026.02.18-f3b8fff95",
     "Dependencies": {
         
     },
@@ -19,6 +19,6 @@
         
     },
     "DisabledByDefault": false,
-    "Main": "com.ryukazan.economy.EconomyPlugin",
+    "Main": "com.yigitguven.economy.EconomyPlugin",
     "IncludesAssetPack": false
 }
