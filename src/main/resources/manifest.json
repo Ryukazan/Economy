@@ -1,24 +1,20 @@
 {
-    "Group": "Yigit",
-    "Name": "Economy",
-    "Version": "1.2.0",
-    "Description": "An economy system for Hytale that adds player wallets, balance checking, and secure money transfers.",
+    "Group": "HytaleModding",
+    "Name": "ExamplePlugin",
+    "Version": "0.0.0",
+    "Description": "Description of your plugin",
     "Authors": [
         {
-            "Name": "Yigit",
-            "Email": "contact@yigitguven.net",
-            "Url": "yigitguven.net"
+            "Name": "Your Name",
+            "Email": "your.email@example.com",
+            "Url": "https://your-website.com"
         }
     ],
-    "Website": "https://www.curseforge.com/hytale/mods/economy",
-    "ServerVersion": "2026.02.18-f3b8fff95",
-    "Dependencies": {
-        
-    },
-    "OptionalDependencies": {
-        
-    },
+    "Website": "https://your-plugin-website.com",
     "DisabledByDefault": false,
-    "Main": "com.yigitguven.economy.EconomyPlugin",
-    "IncludesAssetPack": false
+    "IncludesAssetPack": false,
+    "Dependencies": {},
+    "OptionalDependencies": {},
+    "ServerVersion": "*",
+    "Main": "dev.hytalemodding.EconomyPlugin"
 }
